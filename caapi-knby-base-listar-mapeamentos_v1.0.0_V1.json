@@ -1,0 +1,113 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "title": "Mapeamento Vagas Kenoby API",
+    "version": "v1"
+  },
+  "schemes": ["https"],
+  "host": "apigatewaydes.bvnet.bv",
+  "basePath": "/",
+  "definitions": {},
+  "paths": {"/v1/parceiros/kenoby/mapeamentos/listar": {"get": {
+    "produces": ["application/json"],
+    "description": "Esta API permite listar e procurar por recursos de mapeamento fornecendo argumentos de consulta por vagas no sistema Kenoby.\nSegurança: OAuth (two-legged). Para maiores detalhes do fluxo OAuth de duas pernas, acesse o link: <a href=\"/documentacao#autenticacaolocal\">Documentação OAuth de duas pernas</a>\nHeader: Implementada Trilha de Auditoria\n",
+    "parameters": [{
+      "in": "query",
+      "name": "filtro",
+      "description": "parametro de filtro",
+      "required": true,
+      "type": "string"
+    }],
+    "responses": {
+      "200": {"description": "Retorno."},
+      "400": {
+        "description": "Request Inválido.",
+        "schema": {
+          "type": "object",
+          "properties": {"fault": {
+            "type": "object",
+            "properties": {
+              "codigo": {"type": "string"},
+              "tipo": {"type": "string"},
+              "sistemaOrigem": {"type": "string"},
+              "mensagem": {"type": "string"},
+              "servicoOrigem": {"type": "string"},
+              "listaExcecao": {
+                "type": "object",
+                "properties": {"excecao": {
+                  "type": "object",
+                  "properties": {
+                    "nome": {"type": "string"},
+                    "descricao": {
+                      "type": "array",
+                      "items": {"type": "string"}
+                    }
+                  },
+                  "required": [
+                    "nome",
+                    "descricao"
+                  ]
+                }},
+                "required": ["excecao"]
+              }
+            },
+            "required": [
+              "codigo",
+              "tipo",
+              "sistemaOrigem",
+              "mensagem",
+              "servicoOrigem"
+            ]
+          }}
+        },
+        "examples": {"application/json": {"fault": {
+          "codigo": "30",
+          "tipo": "TECNICO",
+          "sistemaOrigem": "APIM",
+          "mensagem": "erro de validacao de parametros",
+          "servicoOrigem": "/v1/parceiros/kenoby/mapeamentos/listar"
+        }}}
+      },
+      "401": {
+        "description": "Autenticação Inválida",
+        "examples": {"application/json": {"fault": {
+          "codigo": "990",
+          "tipo": "OAuth require 2.0",
+          "sistemaOrigem": "APIM",
+          "mensagem": "Falha autenticação OAuth.",
+          "servicoOrigem": "/v1/parceiros/kenoby/mapeamentos/listar"
+        }}}
+      },
+      "403": {
+        "description": "Autorização recusada",
+        "examples": {"application/json": {
+          "requestId": "0000015afaea0172-b16a2",
+          "fault": {
+            "codigo": "3033",
+            "tipo": "TECNICO",
+            "sistemaOrigem": "APIM",
+            "mensagem": "parametros insuficientes para autenticacao",
+            "servicoOrigem": "/v1/parceiros/kenoby/mapeamentos/listar"
+          }
+        }}
+      },
+      "500": {
+        "description": "Erro do Servidor",
+        "examples": {"application/json": {
+          "requestId": "0000015afaea0172-b5248",
+          "fault": {
+            "codigo": "5025",
+            "tipo": "ParserException",
+            "sistemaOrigem": "<nome-do-sistema>",
+            "mensagem": "Envelope SOAP com formato incorreto",
+            "servicoOrigem": "\"<nome-do-servico>\"",
+            "listaExcecao": {"excecao": {
+              "nome": "Excecao de backend",
+              "descricao": ["Lista de exceção do backend"]
+            }}
+          }
+        }}
+      }
+    }
+  }}}
+}

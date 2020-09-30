@@ -1,0 +1,135 @@
+swagger: '2.0'
+info:
+  title: Conta Corrente Dados Básicos API
+  version: '1.0'
+  x-audience: company-internal
+  x-api-id: d0184f38-b98d-11e7-9c56-68f728c1ba70
+  description: API que trata os dados básicos de Conta Corrente do Atacado e Private.
+  contact:
+    name: Wendel
+    email: wendel.lucas@bv.com.br
+    url: www.bv.com.br
+host: petstore.swagger.io
+basePath: /
+securityDefinitions:
+  oauth2:
+    type: oauth2
+    flow: password
+    tokenUrl: https://tokeninfo.example.com
+    scopes:
+      uid: Unique identifier of the user accessing the service.
+
+security:
+  - oauth2: [uid]
+schemes:
+  - http
+consumes:
+  - application/json
+produces:
+  - application/json
+paths:
+  /pets:
+    get:
+      summary: List all pets
+      operationId: listPets
+      tags:
+        - pets
+      parameters:
+        - name: limit
+          in: query
+          description: How many items to return at one time (max 100)
+          required: false
+          type: integer
+          format: int32
+      responses:
+        '200':
+          description: An paged array of pets
+          schema:
+            $ref: '#/definitions/Pets'
+        default:
+          description: unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+    post:
+      summary: Create a pet
+      operationId: createPets
+      tags:
+        - pets
+      responses:
+        '201':
+          description: Null response
+        default:
+          description: unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+  '/pets/{petId}':
+    get:
+      summary: Info for a specific pet
+      operationId: showPetById
+      tags:
+        - pets
+      parameters:
+        - name: petId
+          in: path
+          required: true
+          description: The id of the pet to retrieve
+          type: string
+      responses:
+        '200':
+          description: Expected response to a valid request
+          schema:
+            $ref: '#/definitions/Pets'
+        default:
+          description: unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+  /pets/cats:
+    get:
+      summary: List all cats
+      operationId: listCats
+      tags:
+        - pets
+        - cats
+      parameters:
+        - name: limit
+          in: query
+          description: How many items to return at one time (max 100)
+          required: false
+          type: integer
+          format: int32
+      responses:
+        '200':
+          description: An paged array of cat pets
+          schema:
+            $ref: '#/definitions/Pets'
+        default:
+          description: unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+definitions:
+  Pet:
+    required:
+      - id
+      - name
+    properties:
+      id:
+        type: string
+      name:
+        type: string
+      tag:
+        type: string
+  Pets:
+    type: object
+    items:
+      $ref: '#/definitions/Pet'
+  Error:
+    required:
+      - code
+      - message
+    properties:
+      code:
+        type: integer
+        format: int32
+      message:
+        type: string
+

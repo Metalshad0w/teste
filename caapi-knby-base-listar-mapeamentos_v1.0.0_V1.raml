@@ -1,0 +1,183 @@
+#%RAML 0.8
+title: Mapeamento Vagas Kenoby API
+baseUri: https://apigatewaydes.bvnet.bv
+version: v1
+# Release Notes
+# v2.0 01-12-2017 - Criação
+securitySchemes:
+  - oauth_2_0:
+      description: |
+        Esta API utiliza O OAuth de duas pernas. Para maiores detalhes do fluxo OAuth veja em <a href="/documentation">Documentação OAuth de duas pernas</a>
+      type: OAuth 2.0
+      describedBy:
+        headers:
+          Authorization:
+            description: |
+              Usado para enviar a access_token Oauth2. Não use essa opção se passar o "access_token" como parâmetro na query string.
+            type: string
+        queryParameters:
+          access_token:
+            description: |
+               Usado para enviar um acess token OAuth 2. Não utilize em conjunto com o  "Authorization" header.
+            type: string
+        responses:
+          401:
+            description: |
+              Bad or expired token. This can happen if the user or Platform revoked or expired an access token. To fix, you should re-authenticate the user.
+          403:
+            description: |
+              Bad OAuth request (wrong consumer key, bad nonce, expired timestamp...). Unfortunately, re-authenticating the user won't help here.
+      settings:
+        authorizationUri: https://api<.ambiente>.bancovotorantim.com.br/auth/oauth/v2/authorize
+        accessTokenUri: https://api<.ambiente>.bancovotorantim.com.br/auth/oauth/v2/token
+        authorizationGrants: [client_credentials]
+
+/v1/parceiros/kenoby/mapeamentos/listar:
+  uriParameters:
+  get:
+    description: |
+      Esta API permite listar e procurar por recursos de mapeamento fornecendo argumentos de consulta por vagas no sistema Kenoby.
+      Segurança: OAuth (two-legged). Para maiores detalhes do fluxo OAuth de duas pernas, acesse o link: <a href="/documentacao#autenticacaolocal">Documentação OAuth de duas pernas</a>
+      Header: Implementada Trilha de Auditoria
+    securedBy: [oauth_2_0]
+    queryParameters:
+      filtro:
+        type: string
+        required: true
+        description: parametro de filtro
+
+    responses:
+      200:
+        description: Retorno.
+
+      400:
+        description: Request Inválido.
+        body:
+          application/json:
+            schema: |
+              {
+                "$schema": "http://json-schema.org/draft-04/schema#",
+                "type": "object",
+                "properties": {
+                  "fault": {
+                    "type": "object",
+                    "properties": {
+                      "codigo": {
+                        "type": "string"
+                      },
+                      "tipo": {
+                        "type": "string"
+                      },
+                      "sistemaOrigem": {
+                        "type": "string"
+                      },
+                      "mensagem": {
+                        "type": "string"
+                      },
+                      "servicoOrigem": {
+                        "type": "string"
+                      },
+                      "listaExcecao": {
+                        "type": "object",
+                        "properties": {
+                          "excecao": {
+                            "type": "object",
+                            "properties": {
+                              "nome": {
+                                "type": "string"
+                              },
+                              "descricao": {
+                                "type": "array",
+                                "items": {
+                                  "type": "string"
+                                }
+                              }
+                            },
+                            "required": [
+                              "nome",
+                              "descricao"
+                            ]
+                          }
+                        },
+                        "required": [
+                          "excecao"
+                        ]
+                      }
+                    },
+                    "required": [
+                      "codigo",
+                      "tipo",
+                      "sistemaOrigem",
+                      "mensagem",
+                      "servicoOrigem"
+                    ]
+                  }
+                },
+                "required": [
+                  "fault"
+                ]
+              }
+
+            example: |
+              {
+                "fault": {
+                  "codigo": "30",
+                  "tipo": "TECNICO",
+                  "sistemaOrigem": "APIM",
+                  "mensagem": "erro de validacao de parametros",
+                  "servicoOrigem": "/v1/parceiros/kenoby/mapeamentos/listar"
+                }
+              }
+      401:
+        description: Autenticação Inválida
+        body:
+          application/json:
+            example: |
+              {
+                "fault": {
+                  "codigo": "990",
+                  "tipo": "OAuth require 2.0",
+                  "sistemaOrigem": "APIM",
+                  "mensagem": "Falha autenticação OAuth.",
+                  "servicoOrigem": "/v1/parceiros/kenoby/mapeamentos/listar"
+                }
+              }
+      403:
+        description: Autorização recusada
+        body:
+          application/json:
+            example: |
+              {
+                 "requestId": "0000015afaea0172-b16a2",
+                 "fault":
+                {
+                   "codigo": "3033",
+                   "tipo": "TECNICO",
+                   "sistemaOrigem": "APIM",
+                   "mensagem": "parametros insuficientes para autenticacao",
+                   "servicoOrigem": "/v1/parceiros/kenoby/mapeamentos/listar"
+                }
+              }
+      500:
+        description: Erro do Servidor
+        body:
+          application/json:
+            example: |
+              {
+                "requestId": "0000015afaea0172-b5248",
+                "fault": {
+                  "codigo": "5025",
+                  "tipo": "ParserException",
+                  "sistemaOrigem": "<nome-do-sistema>",
+                  "mensagem": "Envelope SOAP com formato incorreto",
+                  "servicoOrigem": "\"<nome-do-servico>\"",
+                  "listaExcecao": {
+                    "excecao": {
+                      "nome": "Excecao de backend",
+                      "descricao": [
+                        "Lista de exceção do backend"
+                      ]
+                    }
+                  }
+                }
+              }

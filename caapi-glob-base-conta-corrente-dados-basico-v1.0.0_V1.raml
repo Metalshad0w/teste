@@ -1,0 +1,380 @@
+#%RAML 0.8
+title: Conta Corrente Dados Básicos API
+baseUri: https://apigatewaydes.bvnet.bv
+version: v1
+# Release Notes
+# v1.0.0 12-04-2018 - criacao do contrato
+#
+securitySchemes:
+  - oauth_2_0:
+      description: |
+         Esta API utiliza O OAuth de duas pernas. Para maiores detalhes do fluxo OAuth veja em <a href="/documentation">Documentação OAuth de duas pernas</a>
+      type: OAuth 2.0
+      describedBy:
+        headers:
+          Authorization:
+            description: |
+              Usado para enviar a access_token Oauth2. Não use essa opção se passar o "access_token" como parâmetro na query string.
+            type: string
+        queryParameters:
+          access_token:
+            description: |
+               Usado para enviar um acess token OAuth 2. Não utilize em conjunto com o  "Authorization" header.
+            type: string
+        responses:
+          401:
+            description: |
+              Bad or expired token. This can happen if the user or Platform revoked or expired an access token. To fix, you should re-authenticate the user.
+          403:
+            description: |
+              Bad OAuth request (wrong consumer key, bad nonce, expired timestamp...). Unfortunately, re-authenticating the user won't help here.
+      settings:
+        authorizationUri: https://api<.ambiente>.bancovotorantim.com.br/auth/oauth/v2/authorize
+        accessTokenUri: https://api<.ambiente>.bancovotorantim.com.br/auth/oauth/v2/token
+        authorizationGrants: [client_credentials]
+
+/v1/atacado/contacorrente/dados-basicos:
+  post:
+    description: |
+      Serviço de negócio que trata os dados básicos de Conta Corrente do Atacado e Private.
+      Segurança: OAuth (two-legged). Para maiores detalhes do fluxo OAuth de duas pernas, acesse o link: <a href="/documentacao#autenticacaolocal">Documentação OAuth de duas pernas</a>
+    securedBy: [oauth_2_0]
+    headers:
+      trilhaAuditoria.ticket:
+        type: string
+        required: false
+        description: Identificador de correlação do sistema informado pelo cliente.
+      trilhaAuditoria.siglaSistema:
+        type: string
+        required: false
+        description: Identificador do nome da aplicação informado pelo cliente.
+      trilhaAuditoria.loginUsuarioFinal:
+        type: string
+        required: false
+        description: Identificador do usuário da aplicação cliente.
+      trilhaAuditoria.enderecoIpCliente:
+        type: string
+        required: false
+        description: IP de origem do acesso (aplicado apenas para sistemas Client Server e Sistemas Internet).
+      trilhaAuditoria.fase:
+        type: integer
+        required: false
+        description: Sequencial para indicar a ordem da chamada. Incrementada por cada camada de serviço.
+    body:
+      application/json:
+        schema: |
+          {
+            "$id": "http://example.com/example.json",
+            "type": "object",
+            "definitions": {},
+            "$schema": "http://json-schema.org/draft-07/schema#",
+            "properties": {
+              "pessoa": {
+                "type": "object",
+                "properties": {
+                  "codigoPessoa": {
+                    "type": "integer"
+                  }
+                }
+              },
+              "documento": {
+                "type": "object",
+                "properties": {
+                  "numeroDocumento": {
+                    "type": "string"
+                  }
+                }
+              },
+              "sistema": {
+                "type": "object",
+                "properties": {
+                  "codigoPessoaCorrelation": {
+                    "type": "integer"
+                  },
+                  "codigoSistemaOrigem": {
+                    "type": "integer"
+                  }
+                }
+              }
+            }
+          }
+        example: |
+          {
+             "pessoa": {
+                "codigoPessoa": 1
+             },
+             "documento": {
+                "numeroDocumento": "numeroDocumento"
+             },
+             "sistema": {
+                "codigoPessoaCorrelation": 1,
+                "codigoSistemaOrigem": 1
+             }
+          }
+    responses:
+      200:
+        description: Retorno.
+        body:
+          application/json:
+            schema: |
+              {
+                "$id": "http://example.com/example.json",
+                "type": "object",
+                "definitions": {},
+                "$schema": "http://json-schema.org/draft-07/schema#",
+                "properties": {
+                  "listaContaCorrente": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "contaCorrente": {
+                          "type": "object",
+                          "properties": {
+                            "codigo": {
+                              "type": "integer"
+                            },
+                            "numero": {
+                              "type": "string"
+                            },
+                            "digito": {
+                              "type": "string"
+                            },
+                            "agencia": {
+                              "type": "object",
+                              "properties": {
+                                "codigo": {
+                                  "type": "integer"
+                                },
+                                "numero": {
+                                  "type": "string"
+                                },
+                                "digito": {
+                                  "type": "string"
+                                },
+                                "nome": {
+                                  "type": "string"
+                                },
+                                "nomeAbreviado": {
+                                  "type": "string"
+                                }
+                              }
+                            }
+                          }
+                        },
+                        "situacaoContaCorrente": {
+                          "type": "object",
+                          "properties": {
+                            "codigo": {
+                              "type": "integer"
+                            },
+                            "descricao": {
+                              "type": "string"
+                            },
+                            "indicadorContaOperante": {
+                              "type": "boolean"
+                            }
+                          }
+                        },
+                        "tipoContaCorrente": {
+                          "type": "object",
+                          "properties": {
+                            "codigo": {
+                              "type": "integer"
+                            },
+                            "descricao": {
+                              "type": "string"
+                            },
+                            "tipoContaAbreviado": {
+                              "type": "string"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            example: |
+              {
+                 "listaContaCorrente": [
+                    {
+                       "contaCorrente": {
+                          "codigo": 1,
+                          "numero": "numero",
+                          "digito": "digito",
+                          "agencia": {
+                             "codigo": 1,
+                             "numero": "numero",
+                             "digito": "digito",
+                             "nome": "nome",
+                             "nomeAbreviado": "nomeAbreviado"
+                          }
+                       },
+                       "situacaoContaCorrente": {
+                          "codigo": 1,
+                          "descricao": "descricao",
+                          "indicadorContaOperante": true
+                       },
+                       "tipoContaCorrente": {
+                          "codigo": 1,
+                          "descricao": "descricao",
+                          "tipoContaAbreviado": "tipoContaAbreviado"
+                       }
+                    },
+                    {
+                       "contaCorrente": {
+                          "codigo": 1,
+                          "numero": "numero",
+                          "digito": "digito",
+                          "agencia": {
+                             "codigo": 1,
+                             "numero": "numero",
+                             "digito": "digito",
+                             "nome": "nome",
+                             "nomeAbreviado": "nomeAbreviado"
+                          }
+                       },
+                       "situacaoContaCorrente": {
+                          "codigo": 1,
+                          "descricao": "descricao",
+                          "indicadorContaOperante": true
+                       },
+                       "tipoContaCorrente": {
+                          "codigo": 1,
+                          "descricao": "descricao",
+                          "tipoContaAbreviado": "tipoContaAbreviado"
+                       }
+                    }
+                 ]
+              }
+      400:
+        description: Request Inválido.
+        body:
+          application/json:
+            schema: |
+              {
+                "$schema": "http://json-schema.org/draft-04/schema#",
+                "type": "object",
+                "properties": {
+                  "fault": {
+                    "type": "object",
+                    "properties": {
+                      "codigo": {
+                        "type": "string"
+                      },
+                      "tipo": {
+                        "type": "string"
+                      },
+                      "sistemaOrigem": {
+                        "type": "string"
+                      },
+                      "mensagem": {
+                        "type": "string"
+                      },
+                      "servicoOrigem": {
+                        "type": "string"
+                      },
+                      "listaExcecao": {
+                        "type": "object",
+                        "properties": {
+                          "excecao": {
+                            "type": "object",
+                            "properties": {
+                              "nome": {
+                                "type": "string"
+                              },
+                              "descricao": {
+                                "type": "array",
+                                "items": {
+                                  "type": "string"
+                                }
+                              }
+                            },
+                            "required": [
+                              "nome",
+                              "descricao"
+                            ]
+                          }
+                        },
+                        "required": [
+                          "excecao"
+                        ]
+                      }
+                    },
+                    "required": [
+                      "codigo",
+                      "tipo",
+                      "sistemaOrigem",
+                      "mensagem",
+                      "servicoOrigem"
+                    ]
+                  }
+                },
+                "required": [
+                  "fault"
+                ]
+              }
+            example: |
+              {
+                "fault": {
+                  "codigo": "30",
+                  "tipo": "TECNICO",
+                  "sistemaOrigem": "APIM",
+                  "mensagem": "erro de validacao de parametros",
+                  "servicoOrigem": "/v1/atacado/contacorrente/dados-basicos"
+                }
+              }
+      401:
+        description: Autenticação Inválida
+        body:
+          application/json:
+            example: |
+              {
+                "fault": {
+                  "codigo": "990",
+                  "tipo": "OAuth require 2.0",
+                  "sistemaOrigem": "APIM",
+                  "mensagem": "Falha autenticação OAuth.",
+                  "servicoOrigem": "/v1/atacado/contacorrente/dados-basicos"
+                }
+              }
+      403:
+        description: Autorização recusada
+        body:
+          application/json:
+            example: |
+              {
+                 "requestId": "0000015afaea0172-b16a2",
+                 "fault":
+                {
+                   "codigo": "3033",
+                   "tipo": "TECNICO",
+                   "sistemaOrigem": "APIM",
+                   "mensagem": "parametros insuficientes para autenticacao",
+                   "servicoOrigem": "/v1/atacado/contacorrente/dados-basicos"
+                }
+              }
+      500:
+        description: Erro do Servidor
+        body:
+          application/json:
+            example: |
+              {
+                "requestId": "0000015afaea0172-b5248",
+                "fault": {
+                  "codigo": "5025",
+                  "tipo": "ParserException",
+                  "sistemaOrigem": "<nome-do-sistema>",
+                  "mensagem": "Envelope SOAP com formato incorreto",
+                  "servicoOrigem": "\"<nome-do-servico>\"",
+                  "listaExcecao": {
+                    "excecao": {
+                      "nome": "Excecao de backend",
+                      "descricao": [
+                        "Lista de exceção do backend"
+                      ]
+                    }
+                  }
+                }
+              }

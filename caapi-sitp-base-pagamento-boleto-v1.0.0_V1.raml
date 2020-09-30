@@ -1,0 +1,380 @@
+#%RAML 0.8
+title: Pagamento Boleto API
+baseUri: https://api-des.bancovotorantim.com.br
+version: v1
+# Release Notes
+# v1.0 28-06-2018 - criação do contrato
+securitySchemes:
+  - oauth_2_0:
+      description: |
+         Esta API utiliza O OAuth de duas pernas. Para maiores detalhes do fluxo OAuth veja em <a href="/documentation">Documentação OAuth de duas pernas</a>
+      type: OAuth 2.0
+      describedBy:
+        headers:
+          Authorization:
+            description: |
+              Usado para enviar a access_token Oauth2. Não use essa opção se passar o "access_token" como parâmetro na query string.
+            type: string
+        queryParameters:
+          access_token:
+            description: |
+               Usado para enviar um acess token OAuth 2. Não utilize em conjunto com o  "Authorization" header.
+            type: string
+        responses:
+          401:
+            description: |
+              Bad or expired token. This can happen if the user or Platform revoked or expired an access token. To fix, you should re-authenticate the user.
+          403:
+            description: |
+              Bad OAuth request (wrong consumer key, bad nonce, expired timestamp...). Unfortunately, re-authenticating the user won't help here.
+      settings:
+        authorizationUri: https://api<.ambiente>.bancovotorantim.com.br/auth/oauth/v2/authorize
+        accessTokenUri: https://api<.ambiente>.bancovotorantim.com.br/auth/oauth/v2/token
+        authorizationGrants: [client_credentials]
+
+/v1/atacado/boleto/pagamento:
+  post:
+    description: |
+      Serviço responsável pelo pagamento de títulos de cobrança (boletos) para o cliente Atacado.
+      Segurança: OAuth (two-legged). Para maiores detalhes do fluxo OAuth de duas pernas, acesse o link: <a href="/documentacao#autenticacaolocal">Documentação OAuth de duas pernas</a>
+      Header: Implementada Trilha de Auditoria
+    securedBy: [oauth_2_0]
+    body:
+      application/json:
+        schema: |
+          {
+            "$id": "http://example.com/example.json",
+            "type": "object",
+            "definitions": {},
+            "$schema": "http://json-schema.org/draft-07/schema#",
+            "properties": {
+              "numeroCNPJRemetente": {
+                "type": "string"
+              },
+              "numeroAgenciaRemetente": {
+                "type": "string"
+              },
+              "numeroBancoRemetente": {
+                "type": "integer"
+              },
+              "tipoPessoaRemetente": {
+                "type": "string"
+              },
+              "nomeRemetente": {
+                "type": "string"
+              },
+              "numeroContaRemetente": {
+                "type": "string"
+              },
+              "numeroBancoFavorecido": {
+                "type": "integer"
+              },
+              "numeroCNPJFavorecido": {
+                "type": "string"
+              },
+              "nomeFavorecido": {
+                "type": "string"
+              },
+              "valorPagamento": {
+                "type": "number"
+              },
+              "historico": {
+                "type": "string"
+              },
+              "codigoOrigem": {
+                "type": "integer"
+              },
+              "codigoFilial": {
+                "type": "integer"
+              },
+              "codigoTransacao": {
+                "type": "integer"
+              },
+              "nomeUsuario": {
+                "type": "string"
+              },
+              "tipoPessoaFavorecido": {
+                "type": "string"
+              },
+              "dataMovimento": {
+                "type": "string"
+              },
+              "tipoContaRemetente": {
+                "type": "string"
+              },
+              "numeroProtocoloCaixa": {
+                "type": "integer"
+              },
+              "nomeSegundoRemetente": {
+                "type": "string"
+              },
+              "numeroCPFSegundoRemetente": {
+                "type": "string"
+              },
+              "linhaDigitavel": {
+                "type": "string"
+              },
+              "dataVencimentoBoleto": {
+                "type": "string"
+              },
+              "codigoTipoDocumentoCodigoBarra": {
+                "type": "integer"
+              },
+              "codigoCanalPagamentoBoleto": {
+                "type": "integer"
+              },
+              "valorDocumentoBoleto": {
+                "type": "number"
+              },
+              "valorDescontoBoleto": {
+                "type": "number"
+              },
+              "valorJuroBoleto": {
+                "type": "number"
+              },
+              "valorMultaBoleto": {
+                "type": "number"
+              },
+              "valorOutroAcrescimoBoleto": {
+                "type": "number"
+              },
+              "siglaSistemaOrigem": {
+                "type": "string"
+              },
+              "codigoLancamentoOrigem": {
+                "type": "string"
+              },
+              "numeroTituloCIP": {
+                "type": "integer"
+              }
+            },
+            "required": [
+              "numeroCNPJRemetente",
+              "numeroAgenciaRemetente",
+              "numeroBancoRemetente",
+              "tipoPessoaRemetente",
+              "nomeRemetente",
+              "numeroContaRemetente",
+              "numeroBancoFavorecido",
+              "valorPagamento",
+              "codigoOrigem",
+              "codigoFilial",
+              "codigoTransacao",
+              "nomeUsuario",
+              "tipoPessoaFavorecido",
+              "dataMovimento",
+              "tipoContaRemetente",
+              "linhaDigitavel",
+              "dataVencimentoBoleto",
+              "codigoTipoDocumentoCodigoBarra",
+              "codigoCanalPagamentoBoleto",
+              "valorDocumentoBoleto",
+              "siglaSistemaOrigem"
+            ]
+          }
+        example: |
+          {
+             "numeroCNPJRemetente": "numeroCNPJRemetente",
+             "numeroAgenciaRemetente": "numeroAgenciaRemetente",
+             "numeroBancoRemetente": 1,
+             "tipoPessoaRemetente": "tipoPessoaRemetente",
+             "nomeRemetente": "nomeRemetente",
+             "numeroContaRemetente": "numeroContaRemetente",
+             "numeroBancoFavorecido": 1,
+             "numeroCNPJFavorecido": "numeroCNPJFavorecido",
+             "nomeFavorecido": "nomeFavorecido",
+             "valorPagamento": 1.1,
+             "historico": "historico",
+             "codigoOrigem": 1,
+             "codigoFilial": 1,
+             "codigoTransacao": 1,
+             "nomeUsuario": "nomeUsuario",
+             "tipoPessoaFavorecido": "tipoPessoaFavorecido",
+             "dataMovimento": "2001-01-01",
+             "tipoContaRemetente": "tipoContaRemetente",
+             "numeroProtocoloCaixa": 1,
+             "nomeSegundoRemetente": "nomeSegundoRemetente",
+             "numeroCPFSegundoRemetente": "numeroCPFSegundoRemetente",
+             "linhaDigitavel": "linhaDigitavel",
+             "dataVencimentoBoleto": "2001-01-01",
+             "codigoTipoDocumentoCodigoBarra": 1,
+             "codigoCanalPagamentoBoleto": 1,
+             "valorDocumentoBoleto": 1.1,
+             "valorDescontoBoleto": 1.1,
+             "valorJuroBoleto": 1.1,
+             "valorMultaBoleto": 1.1,
+             "valorOutroAcrescimoBoleto": 1.1,
+             "siglaSistemaOrigem": "siglaSistemaOrigem",
+             "codigoLancamentoOrigem": "codigoLancamentoOrigem",
+             "numeroTituloCIP": 1
+          }
+    responses:
+      200:
+        description: Retorno.
+        body:
+          application/json:
+            schema: |
+              {
+                "$id": "http://example.com/example.json",
+                "type": "object",
+                "definitions": {},
+                "$schema": "http://json-schema.org/draft-07/schema#",
+                "properties": {
+                  "protocolo": {
+                    "type": "object",
+                    "properties": {
+                      "numeroProcotoloSolicitacao": {
+                        "type": "integer"
+                      },
+                      "codigoStatusProtocoloSolicitacao": {
+                        "type": "string"
+                      },
+                      "statusProtocoloSolicitacao": {
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "codigoStatusProtocoloSolicitacao",
+                      "statusProtocoloSolicitacao"
+                    ]
+                  }
+                }
+              }
+            example: |
+              {
+                 "protocolo": {
+                    "numeroProcotoloSolicitacao": 1,
+                    "codigoStatusProtocoloSolicitacao": "codigoStatusProtocoloSolicitacao",
+                    "statusProtocoloSolicitacao": "statusProtocoloSolicitacao"
+                 }
+              }
+      400:
+        description: Request Inválido.
+        body:
+          application/json:
+            schema: |
+              {
+                "$schema": "http://json-schema.org/draft-04/schema#",
+                "type": "object",
+                "properties": {
+                  "fault": {
+                    "type": "object",
+                    "properties": {
+                      "codigo": {
+                        "type": "string"
+                      },
+                      "tipo": {
+                        "type": "string"
+                      },
+                      "sistemaOrigem": {
+                        "type": "string"
+                      },
+                      "mensagem": {
+                        "type": "string"
+                      },
+                      "servicoOrigem": {
+                        "type": "string"
+                      },
+                      "listaExcecao": {
+                        "type": "object",
+                        "properties": {
+                          "excecao": {
+                            "type": "object",
+                            "properties": {
+                              "nome": {
+                                "type": "string"
+                              },
+                              "descricao": {
+                                "type": "array",
+                                "items": {
+                                  "type": "string"
+                                }
+                              }
+                            },
+                            "required": [
+                              "nome",
+                              "descricao"
+                            ]
+                          }
+                        },
+                        "required": [
+                          "excecao"
+                        ]
+                      }
+                    },
+                    "required": [
+                      "codigo",
+                      "tipo",
+                      "sistemaOrigem",
+                      "mensagem",
+                      "servicoOrigem"
+                    ]
+                  }
+                },
+                "required": [
+                  "fault"
+                ]
+              }
+            example: |
+              {
+                "fault": {
+                  "codigo": "30",
+                  "tipo": "TECNICO",
+                  "sistemaOrigem": "APIM",
+                  "mensagem": "erro de validacao de parametros",
+                  "servicoOrigem": "/v1/atacado/boleto/pagamento"
+                }
+              }
+      401:
+        description: Autenticação Inválida
+        body:
+          application/json:
+            example: |
+              {
+                "fault": {
+                  "codigo": "990",
+                  "tipo": "OAuth require 2.0",
+                  "sistemaOrigem": "APIM",
+                  "mensagem": "Falha autenticação OAuth.",
+                  "servicoOrigem": "/v1/atacado/boleto/pagamento"
+                }
+              }
+      403:
+        description: Autorização recusada
+        body:
+          application/json:
+            example: |
+              {
+                 "requestId": "0000015afaea0172-b16a2",
+                 "fault":
+                {
+                   "codigo": "3033",
+                   "tipo": "TECNICO",
+                   "sistemaOrigem": "APIM",
+                   "mensagem": "parametros insuficientes para autenticacao",
+                   "servicoOrigem": "/v1/atacado/boleto/pagamento"
+                }
+              }
+      500:
+        description: Erro do Servidor
+        body:
+          application/json:
+            example: |
+              {
+                "requestId": "0000015afaea0172-b5248",
+                "fault": {
+                  "codigo": "5025",
+                  "tipo": "ParserException",
+                  "sistemaOrigem": "<nome-do-sistema>",
+                  "mensagem": "Envelope SOAP com formato incorreto",
+                  "servicoOrigem": "\"<nome-do-servico>\"",
+                  "listaExcecao": {
+                    "excecao": {
+                      "nome": "Excecao de backend",
+                      "descricao": [
+                        "Lista de exceção do backend"
+                      ]
+                    }
+                  }
+                }
+              }
