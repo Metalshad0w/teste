@@ -1,7 +1,7 @@
 swagger: '2.0'
 info:
   title: Conta Corrente Dados Básicos API
-  version: '2.0'
+  version: '1.2'
   x-audience: company-internal
   x-api-id: d0184f38-b98d-11e7-9c56-68f728c1ba70
   description: API que trata os dados básicos de Conta Corrente do Atacado e Private.
